@@ -1,10 +1,10 @@
 create table if not exists "group"(
-    id serial primary key,
+    id bigserial primary key,
     name text not null unique
 );
 
 create table if not exists people(
-    id serial primary key,
+    id bigserial primary key,
     first_name text not null,
     last_name text not null,
     pather_name text not null,
@@ -13,12 +13,12 @@ create table if not exists people(
 );
 
 create table if not exists subject(
-    id serial primary key,
+    id bigserial primary key,
     name text
 );
 
 create table if not exists mark(
-    id serial primary key,
+    id bigserial primary key,
     student_id bigint references people(id) on delete cascade,
     subject_id bigint references subject(id) on delete cascade,
     teacher_id bigint references people(id) on delete cascade,
