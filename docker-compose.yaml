@@ -1,0 +1,10 @@
+services:
+  db:
+    container_name: db
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: db-kursach
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - '5432:5432'
