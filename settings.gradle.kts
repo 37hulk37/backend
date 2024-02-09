@@ -1,1 +1,1 @@
-rootProject.name = "db-kursach"
+rootProject.name = "backend"

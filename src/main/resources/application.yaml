@@ -4,5 +4,23 @@ spring:
     url: jdbc:postgresql://localhost:5432/db-kursach
     username: postgres
     password: postgres
+  jooq:
+    sql-dialect: postgres
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: false
+springdoc:
+  show-actuator: false
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+app:
+  system-user:
+    enabled: true
+    id: 0
+    username: system
+    password: system
+  security:
+    jwt:
+      secret: YBBzRKQHxbAE98NyRGSDgBnDIFmFBEEv
+      time-to-live-in-seconds: 86400

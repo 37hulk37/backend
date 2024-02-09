@@ -1,13 +1,26 @@
+import nu.studer.gradle.jooq.JooqGenerate
+
 plugins {
     id("org.springframework.boot") version "3.1.5"
     id("io.spring.dependency-management") version "1.1.3"
     kotlin("jvm") version "1.8.22"
     kotlin("plugin.spring") version "1.8.22"
     id("nu.studer.jooq") version "8.2"
+    id("org.liquibase.gradle") version "2.2.1"
 }
 
 group = "com.hulk"
 version = "0.0.1-SNAPSHOT"
+
+val springDocVersion = "2.3.0"
+val testContainersVersion = "1.19.4"
+val guavaVersion = "10.0.1"
+val jjwtVersion = "0.11.5"
+
+val jdbcDriver = "org.postgresql.Driver"
+val datasourceUrl = "jdbc:postgresql://localhost:5432/db-kursach"
+val datasourceUsername = "postgres"
+val datasourcePassword = "postgres"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -25,19 +38,44 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     runtimeOnly("org.postgresql:postgresql")
     jooqGenerator("org.postgresql:postgresql")
+    implementation("org.testcontainers:testcontainers:1.19.4")
+    liquibaseRuntime("org.liquibase:liquibase-core:4.25.1")
+    liquibaseRuntime("info.picocli:picocli:4.7.5")
+    liquibaseRuntime("org.postgresql:postgresql:42.7.1")
+    liquibaseRuntime("ch.qos.logback:logback-core:1.4.14")
+    liquibaseRuntime("ch.qos.logback:logback-classic:1.4.14")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    //implementation("org.springdoc:spring-openapi-starter-webmvc-ui")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:${jjwtVersion}")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jjwtVersion}")
+    implementation("io.jsonwebtoken:jjwt-api:${jjwtVersion}")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
+    implementation("com.google.guava:guava:${guavaVersion}")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.testcontainers:testcontainers:${testContainersVersion}")
+}
+
+liquibase {
+    activities.register("main") {
+        this.arguments = mapOf(
+            "changelogFile" to "db.changelog-master.xml",
+            "url" to datasourceUrl,
+            "username" to datasourceUsername,
+            "password" to datasourcePassword,
+            "driver" to jdbcDriver,
+            "searchPath" to project.rootDir.absolutePath + "/src/main/resources/db/"
+        )
+    }
+    runList = "main"
 }
 
 jooq {
@@ -45,38 +83,46 @@ jooq {
         create("main") {
             jooqConfiguration.apply {
                 jdbc.apply {
-                    driver = "org.postgresql.Driver"
-                    url = "jdbc:postgresql://localhost:5432/db-kursach"
-                    user = "postgres"
-                    password = "postgres"
-                }
-                generator.apply {
-                    name = "org.jooq.codegen.KotlinGenerator"
-                    database.apply {
-                        name = "org.jooq.meta.postgres.PostgresDatabase"
-                        inputSchema = "public"
-                        excludes = "DATABASECHANGELOG|DATABASECHANGELOGLOCK"
+                    driver = jdbcDriver
+                    url = datasourceUrl
+                    user = datasourceUsername
+                    password = datasourcePassword
+                    generator.apply {
+                        name = "org.jooq.codegen.KotlinGenerator"
+                        database.apply {
+                            name = "org.jooq.meta.postgres.PostgresDatabase"
+                            inputSchema = "public"
+                            excludes = "DATABASECHANGELOG|DATABASECHANGELOGLOCK"
+                        }
+                        generate.apply {
+                            isTables = true
+                            isRecords = true
+                            isDaos = true
+                            isPojos = true
+                            isImmutablePojos = true
+                            isPojosAsKotlinDataClasses = true
+                            isGeneratedAnnotation = true
+                            isSpringAnnotations = true
+                        }
+                        target.apply {
+                            packageName = "com.hulk.dbkursach"
+                        }
+                        strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
                     }
-                    generate.apply {
-                        isTables = true
-                        isRecords = true
-                        isDaos = true
-                        isPojos = true
-                        isImmutablePojos = true
-                        isPojosAsKotlinDataClasses = true
-                        isGeneratedAnnotation = true
-                        isSpringAnnotations = true
-                    }
-                    target.apply {
-                        packageName = "com.hulk.dbkursach"
-                    }
-                    strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
                 }
             }
         }
     }
-}
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+    tasks.withType<JooqGenerate> {
+        dependsOn(tasks.named("update"))
+    }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        dependsOn(tasks.withType<JooqGenerate>())
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }

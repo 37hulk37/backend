@@ -1,6 +1,5 @@
-FROM gradle AS build
-RUN gradle build ...
-
-FROM openjdk
-COPY --from=build kursach.jar .
-RUN java -jar kursach.jar
+FROM eclipse-temurin:17-jdk-alpine
+VOLUME /build
+ARG JAR_FILE
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]

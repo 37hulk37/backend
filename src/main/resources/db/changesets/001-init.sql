@@ -1,3 +1,16 @@
+create type people_type as enum ('Teacher', 'Student');
+create cast (varchar as people_type) with inout as implicit;
+
+create type account_type as enum ('User', 'Admin');
+create cast (varchar as account_type) with inout as implicit;
+
+create table if not exists account(
+    id bigint primary key,
+    username varchar(128) unique not null,
+    password varchar(256) not null,
+    type account_type not null
+);
+
 create table if not exists "group"(
     id bigserial primary key,
     name text not null unique
@@ -5,6 +18,7 @@ create table if not exists "group"(
 
 create table if not exists people(
     id bigserial primary key,
+    account_id bigint references account(id) on delete cascade,
     first_name text not null,
     last_name text not null,
     pather_name text not null,
@@ -14,7 +28,7 @@ create table if not exists people(
 
 create table if not exists subject(
     id bigserial primary key,
-    name text
+    name text not null
 );
 
 create table if not exists mark(
@@ -27,4 +41,4 @@ create table if not exists mark(
 
     check (value >= 2 and mark.value <= 5),
     check ( year >= 0 )
-)
+);
