@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.8.22"
     id("nu.studer.jooq") version "8.2"
     id("org.liquibase.gradle") version "2.2.1"
+    id("org.openapi.generator") version "7.2.0"
 }
 
 group = "com.hulk"
@@ -58,7 +59,7 @@ dependencies {
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
-    implementation("org.openapitools:openapi-generator-gradle-plugin:7.3.0")
+    implementation("org.openapitools:openapi-generator:7.3.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
