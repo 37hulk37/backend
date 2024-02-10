@@ -1,13 +1,14 @@
 package com.hulk.dbkursach.marks
 
 import com.hulk.dbkursach.create
-import com.hulk.dbkursach.people.PeopleType
+import com.hulk.dbkursach.enums.UserType
 import com.hulk.dbkursach.tables.daos.MarkDao
 import com.hulk.dbkursach.tables.pojos.Mark
 import com.hulk.dbkursach.tables.references.GROUP
 import com.hulk.dbkursach.tables.references.MARK
-import com.hulk.dbkursach.tables.references.PEOPLE
 import com.hulk.dbkursach.tables.references.SUBJECT
+import com.hulk.dbkursach.tables.references.USER
+import org.jooq.Condition
 import org.jooq.impl.DSL.select
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -47,19 +48,19 @@ class MarksService(
                 select(MARK.ID)
                     .from(MARK)
                     .innerJoin(SUBJECT).on(SUBJECT.ID.eq(MARK.SUBJECT_ID))
-                    .innerJoin(PEOPLE).on(PEOPLE.ID.eq(MARK.STUDENT_ID)
-                        .and(PEOPLE.TYPE.eq(PeopleType.STUDENT.name))
+                    .innerJoin(USER).on(USER.ID.eq(MARK.STUDENT_ID)
+                        .and(USER.TYPE.eq(UserType.Student))
                     )
-                    .innerJoin(PEOPLE).on(PEOPLE.ID.eq(MARK.TEACHER_ID)
-                        .and(PEOPLE.TYPE.eq(PeopleType.TEACHER.name))
+                    .innerJoin(USER).on(USER.ID.eq(MARK.TEACHER_ID)
+                        .and(USER.TYPE.eq(UserType.Teacher))
                     )
             )
 
 
     private fun getStudentGroupName(studentId: Long): String = markDao.ctx()
         .select(GROUP.NAME)
-        .from(PEOPLE)
-        .innerJoin(GROUP).on(PEOPLE.GROUP_ID.eq(GROUP.ID))
+        .from(USER)
+        .innerJoin(GROUP).on(USER.GROUP_ID.eq(GROUP.ID))
         .where(GROUP.ID.eq(studentId))
         .fetchOneInto(String::class.java)!!
 }

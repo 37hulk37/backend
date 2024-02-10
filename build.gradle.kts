@@ -14,8 +14,8 @@ version = "0.0.1-SNAPSHOT"
 
 val springDocVersion = "2.3.0"
 val testContainersVersion = "1.19.4"
-val guavaVersion = "10.0.1"
 val jjwtVersion = "0.11.5"
+val passayVersion = "1.6.4"
 
 val jdbcDriver = "org.postgresql.Driver"
 val datasourceUrl = "jdbc:postgresql://localhost:5432/db-kursach"
@@ -54,10 +54,11 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:${jjwtVersion}")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jjwtVersion}")
     implementation("io.jsonwebtoken:jjwt-api:${jjwtVersion}")
+    implementation("org.passay:passay:${passayVersion}")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
-    implementation("com.google.guava:guava:${guavaVersion}")
+    implementation("org.openapitools:openapi-generator-gradle-plugin:7.3.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

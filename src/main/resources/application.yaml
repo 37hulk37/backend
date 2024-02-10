@@ -19,7 +19,7 @@ app:
     enabled: true
     id: 0
     username: system
-    password: system
+    password: "{bcrypt}$2a$12$/kb8lZm37GTuzu42z5hchOwechWP6Y1lFi1T6HECSpqik7YVfvHZi"
   security:
     jwt:
       secret: YBBzRKQHxbAE98NyRGSDgBnDIFmFBEEv

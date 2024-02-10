@@ -1,16 +1,11 @@
 package com.hulk.dbkursach.groups
 
 import com.hulk.dbkursach.create
-import com.hulk.dbkursach.people.CreatePeopleRequest
-import com.hulk.dbkursach.people.PeopleStatistics
-import com.hulk.dbkursach.people.PeopleType
-import com.hulk.dbkursach.people.teachers.TeacherInfo
 import com.hulk.dbkursach.tables.daos.GroupDao
 import com.hulk.dbkursach.tables.pojos.Group
-import com.hulk.dbkursach.tables.pojos.People
 import com.hulk.dbkursach.tables.references.GROUP
 import com.hulk.dbkursach.tables.references.MARK
-import com.hulk.dbkursach.tables.references.PEOPLE
+import com.hulk.dbkursach.tables.references.USER
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,8 +15,8 @@ class GroupsService(
     private val groupDao: GroupDao
 ) {
     @Transactional
-    fun createGroup(request: CreateGroupRequest): Group =
-        groupDao.create(Group(name = request.name))
+    fun createGroup(groupname: String): Group =
+        groupDao.create(Group(name = groupname))
 
     @Transactional
     fun updateGroup(group: Group): Group {
@@ -35,8 +30,8 @@ class GroupsService(
     fun getAverageMarks(from: Int, until: Int): List<GroupStatistics> = groupDao.ctx()
         .select(GROUP.NAME, DSL.avg(MARK.VALUE))
         .from(GROUP)
-        .innerJoin(PEOPLE).on(PEOPLE.GROUP_ID.eq(GROUP.ID))
-        .innerJoin(MARK).on(MARK.STUDENT_ID.eq(PEOPLE.ID))
+        .innerJoin(USER).on(USER.GROUP_ID.eq(GROUP.ID))
+        .innerJoin(MARK).on(MARK.STUDENT_ID.eq(USER.ID))
         .where(MARK.YEAR.ge(from)
                 .and(MARK.YEAR.le(until))
         )

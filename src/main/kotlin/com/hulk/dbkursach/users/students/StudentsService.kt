@@ -1,38 +1,40 @@
-package com.hulk.dbkursach.people.students
+package com.hulk.dbkursach.USER.students
 
 import com.hulk.dbkursach.create
-import com.hulk.dbkursach.people.*
+import com.hulk.dbkursach.enums.UserType
+import com.hulk.dbkursach.users.CreateUserRequest
+import com.hulk.dbkursach.users.UserStatistics
 import com.hulk.dbkursach.tables.daos.GroupDao
-import com.hulk.dbkursach.tables.daos.PeopleDao
-import com.hulk.dbkursach.tables.pojos.People
+import com.hulk.dbkursach.tables.daos.UserDao
+import com.hulk.dbkursach.tables.pojos.User
 import com.hulk.dbkursach.tables.references.GROUP
 import com.hulk.dbkursach.tables.references.MARK
-import com.hulk.dbkursach.tables.references.PEOPLE
 import com.hulk.dbkursach.tables.references.SUBJECT
+import com.hulk.dbkursach.tables.references.USER
 import org.jooq.impl.DSL.avg
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class StudentsService(
-    private val studentDao: PeopleDao,
+    private val studentDao: UserDao,
     private val groupDao: GroupDao
 ) {
     @Transactional
-    fun createStudent(request: CreatePeopleRequest): StudentInfo {
-        val student = studentDao.create(People(
+    fun createStudent(request: CreateUserRequest): StudentInfo {
+        val student = studentDao.create(User(
                 firstName = request.firstName,
                 lastName = request.lastName,
                 patherName = request.patherName,
                 groupId = request.groupId,
-                type = PeopleType.STUDENT.name
+                type = UserType.Student
         ))
 
         return StudentInfo(student, getStudentGroupName(student.groupId!!))
     }
 
     @Transactional
-    fun updateStudent(student: People): StudentInfo {
+    fun updateStudent(student: User): StudentInfo {
         if ( !studentDao.existsById(student.id!!)) {
             throw RuntimeException("Student with id ${student.id} not exists")
         }
@@ -41,16 +43,16 @@ class StudentsService(
         return StudentInfo(student, getStudentGroupName(student.id))
     }
 
-    fun getAverageMarks(from: Int, until: Int): List<PeopleStatistics> = studentDao.ctx()
-        .select(PEOPLE.FIRST_NAME, PEOPLE.LAST_NAME, avg(MARK.VALUE))
-        .from(PEOPLE)
-        .innerJoin(MARK).on(MARK.STUDENT_ID.eq(PEOPLE.ID))
+    fun getAverageMarks(from: Int, until: Int): List<UserStatistics> = studentDao.ctx()
+        .select(USER.FIRST_NAME, USER.LAST_NAME, avg(MARK.VALUE))
+        .from(USER)
+        .innerJoin(MARK).on(MARK.STUDENT_ID.eq(USER.ID))
         .innerJoin(SUBJECT).on(MARK.SUBJECT_ID.eq(SUBJECT.ID))
-        .where(PEOPLE.TYPE.eq(PeopleType.STUDENT.name)
+        .where(USER.TYPE.eq(UserType.Student)
             .and(MARK.YEAR.ge(from))
             .and(MARK.YEAR.le(until))
         )
-        .fetch { PeopleStatistics(it.value1()!!, it.value2()!!, it.value3()!!.toDouble()) }
+        .fetch { UserStatistics(it.value1()!!, it.value2()!!, it.value3()!!.toDouble()) }
 
 
     fun deleteStudent(id: Long) {

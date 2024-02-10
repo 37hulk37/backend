@@ -1,36 +1,36 @@
-package com.hulk.dbkursach.people.teachers
+package com.hulk.dbkursach.users.teachers
 
 import com.hulk.dbkursach.create
-import com.hulk.dbkursach.people.CreatePeopleRequest
-import com.hulk.dbkursach.people.PeopleStatistics
-import com.hulk.dbkursach.people.PeopleType
-import com.hulk.dbkursach.tables.daos.PeopleDao
-import com.hulk.dbkursach.tables.pojos.People
+import com.hulk.dbkursach.users.CreateUserRequest
+import com.hulk.dbkursach.users.UserStatistics
+import com.hulk.dbkursach.enums.UserType
+import com.hulk.dbkursach.tables.daos.UserDao
+import com.hulk.dbkursach.tables.pojos.User
 import com.hulk.dbkursach.tables.references.MARK
-import com.hulk.dbkursach.tables.references.PEOPLE
+import com.hulk.dbkursach.tables.references.USER
 import org.jooq.impl.DSL.avg
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TeachersService(
-    private val teachersDao: PeopleDao
+    private val teachersDao: UserDao
 ) {
     @Transactional
-    fun createTeacher(request: CreatePeopleRequest): TeacherInfo {
-        val teacher = teachersDao.create(People(
+    fun createTeacher(request: CreateUserRequest): TeacherInfo {
+        val teacher = teachersDao.create(User(
                 firstName = request.firstName,
                 lastName = request.lastName,
                 patherName = request.patherName,
                 groupId = request.groupId,
-                type = PeopleType.STUDENT.name
-            ))
+                type = UserType.Student
+        ))
 
         return TeacherInfo(teacher)
     }
 
     @Transactional
-    fun updateTeacher(teacher: People): TeacherInfo {
+    fun updateTeacher(teacher: User): TeacherInfo {
         if ( !teachersDao.existsById(teacher.id!!)) {
             throw RuntimeException("Teacher with id ${teacher.id} not exists")
         }
@@ -39,15 +39,15 @@ class TeachersService(
         return TeacherInfo(teacher)
     }
 
-    fun getAverageMarks(from: Int, until: Int): List<PeopleStatistics> = teachersDao.ctx()
-        .select(PEOPLE.FIRST_NAME, PEOPLE.LAST_NAME, avg(MARK.VALUE))
-        .from(PEOPLE)
-        .innerJoin(MARK).on(MARK.STUDENT_ID.eq(PEOPLE.ID))
+    fun getAverageMarks(from: Int, until: Int): List<UserStatistics> = teachersDao.ctx()
+        .select(USER.FIRST_NAME, USER.LAST_NAME, avg(MARK.VALUE))
+        .from(USER)
+        .innerJoin(MARK).on(MARK.STUDENT_ID.eq(USER.ID))
         .where(
             MARK.YEAR.ge(from)
             .and(MARK.YEAR.le(until))
         )
-        .fetch { PeopleStatistics(it.value1()!!, it.value2()!!, it.value3()!!.toDouble()) }
+        .fetch { UserStatistics(it.value1()!!, it.value2()!!, it.value3()!!.toDouble()) }
 
 
     fun deleteTeacher(id: Long) {

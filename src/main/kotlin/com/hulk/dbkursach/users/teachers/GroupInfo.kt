@@ -1,4 +1,4 @@
-package com.hulk.dbkursach.people.teachers
+package com.hulk.dbkursach.users.teachers
 
 data class GroupInfo(
     val id: Long,

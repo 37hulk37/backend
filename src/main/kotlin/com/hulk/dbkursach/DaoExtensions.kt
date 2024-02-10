@@ -1,5 +1,6 @@
 package com.hulk.dbkursach
 
+import org.jooq.Condition
 import org.jooq.UpdatableRecord
 import org.jooq.impl.DAOImpl
 

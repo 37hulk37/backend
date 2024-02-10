@@ -11,7 +11,7 @@ class GroupsController(
     @PostMapping
     fun createSubject(
         @RequestBody request: CreateGroupRequest
-    ): Group = groupsService.createGroup(request)
+    ): Group = groupsService.createGroup(request.name)
 
     @PutMapping
     fun updateSubject(
@@ -28,4 +28,8 @@ class GroupsController(
     @DeleteMapping("/{id}")
     fun deleteSubject(@PathVariable id: Long): Unit =
         groupsService.deleteGroup(id)
+
+    data class CreateGroupRequest(
+        val name: String
+    )
 }

@@ -15,6 +15,7 @@ import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
@@ -41,6 +42,7 @@ class ModuleConfiguration(
         authenticationEntryPoint: AuthenticationEntryPoint
     ): SecurityFilterChain =
         http
+            .securityContext { context -> context.requireExplicitSave(false) }
             .cors(Customizer.withDefaults())
             .csrf(Customizer.withDefaults())
             .securityMatchers {matchers -> matchers.requestMatchers("/api/**") }
@@ -79,12 +81,23 @@ class ModuleConfiguration(
         val provider = SystemUserAuthenticationProvider(
             systemUserProperties.id,
             systemUserProperties.username,
-            systemUserProperties.password
+            systemUserProperties.password,
+            passwordEncoder()
         )
-        provider.isHideUserNotFoundExceptions = true
+        provider.isHideUserNotFoundExceptions = false
 
         return provider
     }
+
+    @Bean
+    fun webSecurityCustomizer(): WebSecurityCustomizer =
+        WebSecurityCustomizer { web ->
+            web.ignoring()
+                .requestMatchers("/swagger-ui*")
+                .requestMatchers("/swagger-ui/*")
+                .requestMatchers("/api-docs*")
+                .requestMatchers("/api-docs/*")
+        }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder =

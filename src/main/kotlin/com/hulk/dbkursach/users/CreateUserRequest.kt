@@ -1,6 +1,6 @@
-package com.hulk.dbkursach.people
+package com.hulk.dbkursach.users
 
-data class CreatePeopleRequest(
+data class CreateUserRequest(
     val id: Long,
     val firstName: String,
     val lastName: String,

@@ -1,10 +1,12 @@
 package com.hulk.dbkursach.marks
 
 import com.hulk.dbkursach.tables.pojos.Mark
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/marks")
+@PreAuthorize("hasPermission('TEACHER')")
 class MarksController(
     private val marksService: MarksService
 ) {

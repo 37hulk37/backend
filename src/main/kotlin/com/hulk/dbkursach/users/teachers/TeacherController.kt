@@ -1,8 +1,9 @@
-package com.hulk.dbkursach.people.teachers
+package com.hulk.dbkursach.users.teachers
 
-import com.hulk.dbkursach.people.CreatePeopleRequest
-import com.hulk.dbkursach.people.PeopleStatistics
-import com.hulk.dbkursach.tables.pojos.People
+import com.hulk.dbkursach.users.CreateUserRequest
+import com.hulk.dbkursach.users.UserStatistics
+import com.hulk.dbkursach.tables.pojos.User
+import jakarta.validation.constraints.PositiveOrZero
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -12,19 +13,19 @@ class TeacherController(
 ) {
     @PostMapping
     fun createSubject(
-        @RequestBody request: CreatePeopleRequest
+        @RequestBody request: CreateUserRequest
     ): TeacherInfo = teachersService.createTeacher(request)
 
     @PutMapping
     fun updateSubject(
-        @RequestBody request: People
+        @RequestBody request: User
     ): TeacherInfo = teachersService.updateTeacher(request)
 
     @GetMapping
     fun getAverageMarks(
-        @RequestParam from: Int,
-        @RequestParam until: Int
-    ): List<PeopleStatistics> = teachersService.getAverageMarks(from, until)
+        @RequestParam from: @PositiveOrZero Int,
+        @RequestParam until: @PositiveOrZero Int
+    ): List<UserStatistics> = teachersService.getAverageMarks(from, until)
 
     @DeleteMapping("/{id}")
     fun deleteSubject(@PathVariable id: Long): Unit =

@@ -1,7 +1,7 @@
 package com.hulk.dbkursach.marks
 
-import com.hulk.dbkursach.people.students.StudentInfo
-import com.hulk.dbkursach.people.teachers.TeacherInfo
+import com.hulk.dbkursach.USER.students.StudentInfo
+import com.hulk.dbkursach.users.teachers.TeacherInfo
 import com.hulk.dbkursach.tables.pojos.Subject
 
 data class MarkInfo(

@@ -1,23 +1,43 @@
 package com.hulk.dbkursach.security
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.authentication.*
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider
-import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.*
+import org.springframework.security.crypto.password.PasswordEncoder
 
 class SystemUserAuthenticationProvider(
     private val id: Long,
     private val username: String,
     private val password: String,
+    private val passwordEncoder: PasswordEncoder
 ): AbstractUserDetailsAuthenticationProvider() {
 
     override fun additionalAuthenticationChecks(
         userDetails: UserDetails?,
         authentication: UsernamePasswordAuthenticationToken?
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun retrieveUser(username: String?, authentication: UsernamePasswordAuthenticationToken?): UserDetails {
-        TODO("Not yet implemented")
+        if (this.username != username) {
+            throw UsernameNotFoundException("Current user is not system one")
+        }
+        val presentedPassword = authentication!!.credentials.toString()
+
+        if (!passwordEncoder.matches(presentedPassword, password)) {
+            val errorMessage = messages.getMessage(
+                "AbstractUserDetailsAuthenticationProvider.badCredentials",
+                "Bad credentials"
+            )
+            throw BadCredentialsException(errorMessage)
+        }
+
+        return CustomUser(
+            id,
+            username,
+            presentedPassword,
+            listOf(SimpleGrantedAuthority("ADMIN"))
+        )
     }
 }
