@@ -17,8 +17,6 @@ class JwtToken(
     companion object {
         const val ROLES_CLAIM_NAME = "roles"
         const val SUBJECT_SPLITTER = "__"
-
-        private val log = LoggerFactory.getLogger(JwtToken::class.java)
     }
 
     fun validate() =
@@ -37,7 +35,6 @@ class JwtToken(
     private fun getUserData(): Optional<List<String>> {
         val userData = claims.subject.split(SUBJECT_SPLITTER)
         if (userData.size != 2) {
-            log.warn("Incorrect format of JWT: the subject is wrong");
             return Optional.empty();
 
         }
@@ -47,7 +44,6 @@ class JwtToken(
     private fun getAuthorities(): Collection<GrantedAuthority> {
         val authorities = claims.get(ROLES_CLAIM_NAME, List::class.java) as List<*>
         if (authorities.isEmpty()) {
-            log.warn("JWT token with empty list of roles for user {}", claims.subject)
         }
         return authorities.stream()
             .map { SimpleGrantedAuthority(it.toString()) }

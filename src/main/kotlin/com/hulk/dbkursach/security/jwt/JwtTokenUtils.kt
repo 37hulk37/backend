@@ -16,13 +16,10 @@ import java.security.Key
 import java.time.Instant
 import java.util.*
 
-@Slf4j
 @UtilityClass
 class JwtTokenUtils {
 
     companion object {
-
-        private val log = LoggerFactory.getLogger(JwtTokenUtils::class.java)
 
         private val signingKeys = mutableMapOf<String, Key>()
 
@@ -56,7 +53,6 @@ class JwtTokenUtils {
                         .body
                 )
             } catch (ex: JwtException) {
-                log.error("Incorrect format of JWT: ${ex.message}")
                 Optional.empty()
             }
 

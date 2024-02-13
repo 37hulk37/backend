@@ -7,7 +7,6 @@ plugins {
     kotlin("plugin.spring") version "1.8.22"
     id("nu.studer.jooq") version "8.2"
     id("org.liquibase.gradle") version "2.2.1"
-    id("org.openapi.generator") version "7.2.0"
 }
 
 group = "com.hulk"
@@ -16,7 +15,6 @@ version = "0.0.1-SNAPSHOT"
 val springDocVersion = "2.3.0"
 val testContainersVersion = "1.19.4"
 val jjwtVersion = "0.11.5"
-val passayVersion = "1.6.4"
 
 val jdbcDriver = "org.postgresql.Driver"
 val datasourceUrl = "jdbc:postgresql://localhost:5432/db-kursach"
@@ -39,12 +37,9 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     runtimeOnly("org.postgresql:postgresql")
     jooqGenerator("org.postgresql:postgresql")
-    implementation("org.testcontainers:testcontainers:1.19.4")
     liquibaseRuntime("org.liquibase:liquibase-core:4.25.1")
     liquibaseRuntime("info.picocli:picocli:4.7.5")
     liquibaseRuntime("org.postgresql:postgresql:42.7.1")
-    liquibaseRuntime("ch.qos.logback:logback-core:1.4.14")
-    liquibaseRuntime("ch.qos.logback:logback-classic:1.4.14")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     compileOnly("org.projectlombok:lombok")
@@ -55,7 +50,6 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:${jjwtVersion}")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jjwtVersion}")
     implementation("io.jsonwebtoken:jjwt-api:${jjwtVersion}")
-    implementation("org.passay:passay:${passayVersion}")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
@@ -115,16 +109,21 @@ jooq {
             }
         }
     }
-
-    tasks.withType<JooqGenerate> {
-        dependsOn(tasks.named("update"))
-    }
-
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        dependsOn(tasks.withType<JooqGenerate>())
-    }
-
-    tasks.withType<Test> {
-        useJUnitPlatform()
-    }
 }
+
+tasks.withType<JooqGenerate> {
+    dependsOn(tasks.named("update"))
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    dependsOn(tasks.withType<JooqGenerate>())
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+configurations.all {
+    exclude(group = "org.slf4j", module = "slf4j-simple")
+}
+
