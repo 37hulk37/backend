@@ -1,5 +1,6 @@
-FROM eclipse-temurin:17-jdk-alpine
-VOLUME /build
-ARG JAR_FILE
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+FROM amazoncorretto:17-alpine-jdk
+EXPOSE 8080
+WORKDIR /opt/app
+CMD ["./gradlew", "clean", "assemble"]
+COPY build/libs/ .
+ENTRYPOINT ["java", "-jar", "app"]

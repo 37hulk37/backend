@@ -1,4 +1,12 @@
 services:
+  backend:
+    container_name: backend
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
   db:
     container_name: kdb
     image: postgres:15-alpine

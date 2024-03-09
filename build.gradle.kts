@@ -13,7 +13,6 @@ group = "com.hulk"
 version = "0.0.1-SNAPSHOT"
 
 val springDocVersion = "2.3.0"
-val testContainersVersion = "1.19.4"
 val jjwtVersion = "0.11.5"
 
 val jdbcDriver = "org.postgresql.Driver"
@@ -57,7 +56,6 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.testcontainers:testcontainers:${testContainersVersion}")
 }
 
 liquibase {
