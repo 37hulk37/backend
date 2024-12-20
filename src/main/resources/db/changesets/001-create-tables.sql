@@ -41,3 +41,9 @@ create table if not exists mark(
     check (value >= 2 and mark.value <= 5),
     check ( year >= 0 )
 );
+
+create table if not exists account_role(
+    id bigserial primary key,
+    account_id bigint references "account"(id),
+    name text not null
+);

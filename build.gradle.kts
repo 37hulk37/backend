@@ -13,10 +13,10 @@ group = "com.hulk"
 version = "0.0.1-SNAPSHOT"
 
 val springDocVersion = "2.3.0"
-val jjwtVersion = "0.11.5"
+val jjwtVersion = "0.12.6"
 
 val jdbcDriver = "org.postgresql.Driver"
-val datasourceUrl = "jdbc:postgresql://localhost:5432/db-kursach"
+val datasourceUrl = "jdbc:postgresql://localhost:5432/university-db"
 val datasourceUsername = "postgres"
 val datasourcePassword = "postgres"
 
@@ -38,12 +38,13 @@ dependencies {
     jooqGenerator("org.postgresql:postgresql")
     liquibaseRuntime("org.liquibase:liquibase-core:4.25.1")
     liquibaseRuntime("info.picocli:picocli:4.7.5")
-    liquibaseRuntime("org.postgresql:postgresql:42.7.1")
+    liquibaseRuntime("org.postgresql:postgresql:42.7.2")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+    implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}")
     implementation("org.springframework.boot:spring-boot-starter-security")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:${jjwtVersion}")
@@ -56,6 +57,7 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.kafka:spring-kafka-test")
 }
 
 liquibase {
@@ -99,7 +101,7 @@ jooq {
                             isSpringAnnotations = true
                         }
                         target.apply {
-                            packageName = "com.hulk.dbkursach"
+                            packageName = "com.hulk.university"
                         }
                         strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
                     }
