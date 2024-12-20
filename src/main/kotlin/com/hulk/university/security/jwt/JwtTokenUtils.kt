@@ -18,22 +18,21 @@ fun getUser(token: String, jwtProperties: JwtProperties): CustomUser? =
 
 
 fun generateToken(customUser: CustomUser, jwtProperties: JwtProperties): String {
-    val id = UUID.randomUUID().toString()
     val now = Instant.now()
     return Jwts.builder()
-        .id(id)
+        .id(UUID.randomUUID().toString())
         .issuedAt(Date.from(now))
         .expiration(Date.from(now.plusSeconds(jwtProperties.timeToLiveInSeconds)))
-        .subject(customUser.username + SUBJECT_SPLITTER + customUser.id)
+        .subject("${customUser.id}$SUBJECT_SPLITTER${customUser.username}")
         .claim(ROLES_CLAIM_NAME, customUser.getUserAuthorities())
-        .signWith(getSigningKey(jwtProperties.secret))
+        .signWith(getSigningKey(jwtProperties.secret), Jwts.SIG.HS256)
         .compact()
 }
 
 private fun parseToken(token: String, jwtProperties: JwtProperties): Claims? {
     return try {
         Jwts.parser()
-            .setSigningKey(jwtProperties.secret)
+            .verifyWith(getSigningKey(jwtProperties.secret))
             .build()
             .parseSignedClaims(token)
             .payload

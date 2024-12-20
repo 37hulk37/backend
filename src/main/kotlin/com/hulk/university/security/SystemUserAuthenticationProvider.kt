@@ -1,6 +1,5 @@
 package com.hulk.university.security
 
-import com.hulk.university.enums.AccountType
 import org.springframework.security.authentication.*
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -38,7 +37,7 @@ class SystemUserAuthenticationProvider(
             id,
             username,
             presentedPassword,
-            listOf(SimpleGrantedAuthority(AccountType.Admin.name))
+            listOf(SimpleGrantedAuthority("ADMIN"))
         )
     }
 }

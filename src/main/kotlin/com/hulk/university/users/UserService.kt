@@ -1,16 +1,22 @@
 package com.hulk.university.users
 
 import com.hulk.university.create
+import com.hulk.university.createOrUpdate
 import com.hulk.university.enums.UserType
+import com.hulk.university.exceptions.ApplicationException
+import com.hulk.university.exceptions.NotFoundException
+import com.hulk.university.groups.GroupsService
+import com.hulk.university.setIfNotNull
 import com.hulk.university.tables.daos.UserDao
 import com.hulk.university.tables.pojos.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
+import java.time.LocalDateTime
 
 @Service
 class UserService(
     private val userDao: UserDao,
+    private val groupsService: GroupsService,
     private val userHandlers: List<UserHandler>
 ) {
 
@@ -20,69 +26,68 @@ class UserService(
 
     @Transactional
     fun createUser(request: CreateUserRequest): UserInfo {
-        val student = userDao.create(User(
+        val user = userDao.create(User(
             firstName = request.firstName(),
             lastName = request.lastName(),
             patherName = request.patherName(),
             groupId = request.groupId(),
             type = request.userType()
         ))
-
-        val handler = userHandlersByType[request.userType()] ?:
-            throw RuntimeException("Unknown user type: ${request.userType()}")
-
-        return UserInfo(student, handler.getGroupName(request.groupId()))
+        return transformToInfo(user)
     }
 
     @Transactional
-    fun updateUser(user: User): UserInfo {
-        if ( !isUserAlreadyExists(user.id!!)) {
-            throw RuntimeException("User with id ${user.id} not exists")
-        }
-        userDao.update(user)
+    fun updateUser(userId: Long, request: UpdateUserRequest): UserInfo {
+        val user = userDao.findById(userId) ?:
+            throw NotFoundException("User with id $userId not found")
 
-        val handler = userHandlersByType[user.type] ?:
-            throw RuntimeException("Unknown user type: ${user.type}")
-        return UserInfo(user, handler.getGroupName(user.groupId!!))
+        setIfNotNull(request.firstName()) { user.firstName = request.firstName() }
+        setIfNotNull(request.lastName()) { user.lastName = request.lastName() }
+        setIfNotNull(request.patherName()) { user.patherName = request.patherName() }
+        setIfNotNull(request.groupId()) { user.groupId = request.groupId() }
+        val updatedUser = userDao.createOrUpdate(user)
+
+        return transformToInfo(updatedUser)
     }
 
     @Transactional(readOnly = true)
     fun getUser(id: Long): UserInfo {
         val user = userDao.findById(id) ?:
-            throw RuntimeException("User with id $id not found")
+            throw NotFoundException("User with id $id not found")
 
-        val handler = userHandlersByType[user.type] ?:
-            throw RuntimeException("Unknown user type: ${user.type}")
-        return UserInfo(user, handler.getGroupName(user.groupId!!))
+        return transformToInfo(user)
     }
+
 
     @Transactional(readOnly = true)
-    fun getUsers(userType: UserType): List<UserInfo> {
-        val handler = userHandlersByType[userType] ?:
-            throw RuntimeException("Unknown user type: $userType")
+    fun getUsers(userType: UserType): List<UserInfo> =
+        userDao.fetchByType(userType)
+            .map(::transformToInfo)
 
-        return userDao.fetchByType(userType)
-            .associateBy { it.groupId }
-            .map { (groupId, user) ->
-                UserInfo(user, handler.getGroupName(groupId))
-            }
-    }
 
     @Transactional
     fun deleteUser(userId: Long) {
         if (!userDao.existsById(userId)) {
-            throw RuntimeException("User with id $userId not exists")
+            throw NotFoundException("User with id $userId not exists")
         }
         userDao.deleteById(userId)
     }
 
-    fun isUserAlreadyExists(userId: Long): Boolean = userDao.existsById(userId)
+    fun isUserExists(userId: Long, type: UserType): Boolean =
+        userDao.findById(userId)?.takeIf { it.type == type } != null
 
-    fun getAverageMarks(userType: UserType, from: Instant, to: Instant): List<UserStatistics> {
+
+    fun getAverageMarks(userType: UserType, from: LocalDateTime, to: LocalDateTime): List<UserStatistics> {
         val handler = userHandlersByType[userType] ?:
-            throw RuntimeException("Unknown user type: $userType")
+            throw ApplicationException("Unknown user type: $userType")
 
         return handler.getAverageMarks(from, to)
+    }
+
+    private fun transformToInfo(user: User): UserInfo {
+        val groupName = user.groupId?.let { groupsService.getGroup(user.groupId)?.name }
+            ?: ""
+        return UserInfo(user, groupName)
     }
 
 }

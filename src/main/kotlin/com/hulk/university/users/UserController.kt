@@ -1,10 +1,9 @@
 package com.hulk.university.users
 
 import com.hulk.university.enums.UserType
-import com.hulk.university.tables.pojos.User
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
-import java.time.Instant
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/users")
@@ -12,22 +11,12 @@ class UserController(
     private val userService: UserService,
 ) {
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping
-    fun createUser(@RequestBody request: CreateUserRequest): UserInfo =
-        userService.createUser(request)
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping
-    fun updateUser(@RequestBody request: User): UserInfo =
-        userService.updateUser(request)
-
     @GetMapping("/{id}")
     fun getUser(@PathVariable id: Long): UserInfo =
         userService.getUser(id)
 
-    @GetMapping("/{userType}")
-    fun getUsers(@PathVariable userType: UserType): List<UserInfo> =
+    @GetMapping
+    fun getUsers(@RequestParam userType: UserType): List<UserInfo> =
         userService.getUsers(userType)
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -35,11 +24,18 @@ class UserController(
     fun deleteUser(@PathVariable id: Long): Unit =
         userService.deleteUser(id)
 
-    @GetMapping("/{userType}")
+    @GetMapping("/{userType}/averageMarks")
     fun getAverageMarks(
         @PathVariable userType: UserType,
-        @RequestParam from: Instant,
-        @RequestParam to: Instant,
-    ): List<UserStatistics> = userService.getAverageMarks(userType, from, to)
+        @RequestParam(required = false) from: LocalDateTime?,
+        @RequestParam(required = false) to: LocalDateTime?,
+    ): List<UserStatistics> {
+        val actualTo = to ?: LocalDateTime.now()
+        return userService.getAverageMarks(
+            userType,
+            from ?: actualTo.minusYears(1),
+            actualTo
+        )
+    }
 
 }

@@ -30,8 +30,9 @@ class JwtTokenFilter(
         val token = header.split(" ")[1].trim()
 
         getUser(token, jwtProperties)
-            ?.let { user -> UsernamePasswordAuthenticationToken(user.username, user.password, user.authorities) }
-            ?.let { authentication ->
+            ?.also { user ->
+                val authentication = UsernamePasswordAuthenticationToken(user.username, user.password, user.authorities)
+
                 authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
                 SecurityContextHolder.getContext().authentication = authentication
             }

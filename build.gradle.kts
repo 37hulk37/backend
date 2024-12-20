@@ -53,7 +53,6 @@ dependencies {
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
-    implementation("org.openapitools:openapi-generator:7.3.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
@@ -95,7 +94,6 @@ jooq {
                             isRecords = true
                             isDaos = true
                             isPojos = true
-                            isImmutablePojos = true
                             isPojosAsKotlinDataClasses = true
                             isGeneratedAnnotation = true
                             isSpringAnnotations = true

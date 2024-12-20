@@ -1,6 +1,9 @@
 package com.hulk.university.groups
 
+import java.math.BigDecimal
+
 data class GroupStatistics(
+    val id: Long,
     val name: String,
-    val avgMark: Double
+    val averageMark: BigDecimal
 )

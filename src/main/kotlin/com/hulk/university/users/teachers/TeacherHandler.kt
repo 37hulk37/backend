@@ -8,7 +8,7 @@ import com.hulk.university.users.UserHandler
 import com.hulk.university.users.UserStatistics
 import org.jooq.impl.DSL.avg
 import org.springframework.stereotype.Component
-import java.time.Instant
+import java.time.LocalDateTime
 import java.time.temporal.ChronoField
 
 @Component
@@ -18,13 +18,14 @@ class TeacherHandler(
 
     override fun getUserType(): UserType = UserType.Teacher
 
-    override fun getAverageMarks(from: Instant, to: Instant): List<UserStatistics> = userDao.ctx()
-        .select(USER.FIRST_NAME, USER.LAST_NAME, avg(MARK.VALUE))
+    override fun getAverageMarks(from: LocalDateTime, to: LocalDateTime): List<UserStatistics> = userDao.ctx()
+        .select(USER.ID, USER.FIRST_NAME, USER.LAST_NAME, avg(MARK.VALUE).`as`("averageMark"))
         .from(USER)
-        .innerJoin(MARK).on(MARK.STUDENT_ID.eq(USER.ID))
-        .where(
-            MARK.YEAR.ge(from.get(ChronoField.YEAR))
-                .and(MARK.YEAR.le(to.get(ChronoField.YEAR)))
+        .join(MARK).on(MARK.TEACHER_ID.eq(USER.ID))
+        .where(MARK.YEAR.ge(from.get(ChronoField.YEAR))
+            .and(MARK.YEAR.le(to.get(ChronoField.YEAR)))
         )
+        .groupBy(USER.ID)
+        .orderBy(USER.ID)
         .fetchInto(UserStatistics::class.java)
 }

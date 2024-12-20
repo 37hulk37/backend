@@ -1,4 +1,4 @@
-package com.hulk.university.accounts
+package com.hulk.university.auth
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

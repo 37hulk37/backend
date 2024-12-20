@@ -2,7 +2,6 @@ package com.hulk.university.security
 
 import com.hulk.university.tables.pojos.Account
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 
 class CustomUser(

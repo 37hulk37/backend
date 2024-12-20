@@ -1,4 +1,4 @@
-package com.hulk.university.accounts
+package com.hulk.university.auth
 
 import com.hulk.university.security.CustomUser
 import com.hulk.university.security.jwt.JwtProperties
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RequestMapping("/v1/auth")
+@RequestMapping("/api/auth")
 @RestController
 class AuthController(
     private val authManager: AuthenticationManager,

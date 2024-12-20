@@ -1,35 +1,52 @@
 package com.hulk.university.groups
 
+import com.hulk.university.exceptions.NotFoundException
 import com.hulk.university.tables.pojos.Group
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/groups")
 class GroupsController(
     private val groupsService: GroupsService
 ) {
-    @PostMapping
-    fun createSubject(
-        @RequestBody request: CreateGroupRequest
-    ): Group = groupsService.createGroup(request.name)
 
-    @PutMapping
-    fun updateSubject(
-        @RequestBody request: Group
-    ): Group = groupsService.updateGroup(request)
+    @PostMapping
+    fun createGroup(@RequestBody request: GroupRequest) =
+        groupsService.createGroup(request.name)
+
+    @PutMapping("/{id}")
+    fun updateGroup(
+        @PathVariable id: Long,
+        @RequestBody request: GroupRequest
+    ): Group = groupsService.updateGroup(id, request.name)
 
     @GetMapping
+    fun getGroups() =
+        groupsService.getGroups()
+
+    @GetMapping("/{id}")
+    fun getGroup(@PathVariable id: Long) =
+        groupsService.getGroup(id) ?:
+            throw NotFoundException("Group with id $id not exists")
+
+    @GetMapping("/averageMarks")
     fun getAverageMarks(
-        @RequestParam from: Int,
-        @RequestParam until: Int
-    ): List<GroupStatistics> =
-        groupsService.getAverageMarks(from, until)
+        @RequestParam(required = false) from: LocalDateTime?,
+        @RequestParam(required = false) to: LocalDateTime?
+    ): List<GroupStatistics> {
+        val actualTo = to ?: LocalDateTime.now()
+        return groupsService.getAverageMarks(
+            from ?: actualTo.minusYears(1),
+            actualTo
+        )
+    }
 
     @DeleteMapping("/{id}")
-    fun deleteSubject(@PathVariable id: Long): Unit =
+    fun deleteGroup(@PathVariable id: Long) =
         groupsService.deleteGroup(id)
 
-    data class CreateGroupRequest(
+    data class GroupRequest(
         val name: String
     )
 }

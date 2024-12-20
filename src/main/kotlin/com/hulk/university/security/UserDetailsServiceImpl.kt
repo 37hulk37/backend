@@ -1,7 +1,6 @@
 package com.hulk.university.security
 
-import com.hulk.university.accounts.getAuthorities
-import com.hulk.university.exceptions.NotFoundException
+import com.hulk.university.auth.getAuthorities
 import com.hulk.university.tables.AccountRole.Companion.ACCOUNT_ROLE
 import com.hulk.university.tables.daos.AccountDao
 import com.hulk.university.tables.daos.AccountRoleDao
@@ -21,9 +20,7 @@ class UserDetailsServiceImpl(
     override fun loadUserByUsername(username: String?): UserDetails {
         val account = accountDao.fetchOneByUsername(username!!)
             ?: throw UsernameNotFoundException("Account with username $username not found")
-
         val role = accountRoleDao.fetchOne(ACCOUNT_ROLE.ACCOUNT_ID, account.id)
-            ?: throw NotFoundException("Role for account ${account.id} not found")
 
         return CustomUser(account, account.getAuthorities(role))
     }
