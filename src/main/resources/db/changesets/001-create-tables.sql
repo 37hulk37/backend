@@ -1,14 +1,11 @@
 create type user_type as enum ('Teacher', 'Student');
 create cast ( varchar as user_type ) with inout as implicit;
 
-create type account_type as enum ('User', 'Admin');
-create cast ( varchar as account_type ) with inout as implicit;
-
 create table if not exists account(
-    id bigint primary key,
+    id bigserial primary key,
     username varchar(128) unique not null,
     password varchar(128) not null,
-    type account_type not null
+    is_admin boolean not null
 );
 
 create table if not exists "group"(
@@ -40,4 +37,10 @@ create table if not exists mark(
 
     check (value >= 2 and mark.value <= 5),
     check ( year >= 0 )
+);
+
+create table if not exists account_role(
+    id bigserial primary key,
+    account_id bigint references "account"(id),
+    name text not null
 );

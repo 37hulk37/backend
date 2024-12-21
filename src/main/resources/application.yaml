@@ -1,13 +1,14 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/db-kursach
+    url: jdbc:postgresql://localhost:5432/university-db
     username: postgres
     password: postgres
   jooq:
     sql-dialect: postgres
   liquibase:
     enabled: false
+
 springdoc:
   show-actuator: false
   api-docs:
@@ -15,6 +16,7 @@ springdoc:
     version: openapi_3_1
   swagger-ui:
     enabled: true
+
 app:
   system-user:
     enabled: true
@@ -23,5 +25,5 @@ app:
     password: "{bcrypt}$2a$12$/kb8lZm37GTuzu42z5hchOwechWP6Y1lFi1T6HECSpqik7YVfvHZi"
   security:
     jwt:
-      secret: YBBzRKQHxbAE98NyRGSDgBnDIFmFBEEv
+      secret: 9a4f2c8d3b7a1e6f45c8a0b3f267d8b1d4e6f3c8a9d2b5f8e3a9c8b5f6v8a3d9
       time-to-live-in-seconds: 86400

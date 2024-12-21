@@ -1,6 +1,6 @@
 services:
   backend:
-    container_name: backend
+    container_name: university-app
     build:
       context: .
     ports:
@@ -8,10 +8,10 @@ services:
     depends_on:
       - db
   db:
-    container_name: kdb
+    container_name: university-db
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: db-kursach
+      POSTGRES_DB: university-db
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
     ports:
