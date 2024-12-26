@@ -3,7 +3,7 @@ package com.hulk.university.users
 import com.hulk.university.enums.UserType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
+import java.time.Instant
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,10 +27,10 @@ class UserController(
     @GetMapping("/{userType}/averageMarks")
     fun getAverageMarks(
         @PathVariable userType: UserType,
-        @RequestParam(required = false) from: LocalDateTime?,
-        @RequestParam(required = false) to: LocalDateTime?,
+        @RequestParam(required = false) from: Instant?,
+        @RequestParam(required = false) to: Instant?,
     ): List<UserStatistics> {
-        val actualTo = to ?: LocalDateTime.now()
+        val actualTo = to ?: Instant.now()
         return userService.getAverageMarks(
             userType,
             from ?: actualTo.minusYears(1),

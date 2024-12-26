@@ -20,3 +20,21 @@ fun <R: UpdatableRecord<R>, P, T> DAOImpl<R, P, T>.createOrUpdate(entityObj: P):
         .returning()
         .fetchOne(this.mapper())!!
 }
+
+fun <R: UpdatableRecord<R>, P, T> DAOImpl<R, P, T>.createAll(entityObjs: List<P>): List<P> {
+    val records = entityObjs.map { entityObj -> this.ctx().newRecord(this.table, entityObj) }
+    this.ctx()
+        .batchInsert(records)
+        .execute()
+
+    return entityObjs
+}
+
+fun <R: UpdatableRecord<R>, P, T> DAOImpl<R, P, T>.updateAll(entityObjs: List<P>): List<P> {
+    val records = entityObjs.map { entityObj -> this.ctx().newRecord(this.table, entityObj) }
+    this.ctx()
+        .batchUpdate(records)
+        .execute()
+
+    return entityObjs
+}

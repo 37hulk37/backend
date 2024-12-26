@@ -1,4 +1,5 @@
 import nu.studer.gradle.jooq.JooqGenerate
+import org.jooq.meta.jaxb.ForcedType
 
 plugins {
     id("org.springframework.boot") version "3.1.5"
@@ -88,6 +89,10 @@ jooq {
                             name = "org.jooq.meta.postgres.PostgresDatabase"
                             inputSchema = "public"
                             excludes = "DATABASECHANGELOG|DATABASECHANGELOGLOCK"
+                            forcedTypes = listOf(ForcedType()
+                                .withUserType("java.time.Instant")
+                                .withIncludeTypes("timestamp")
+                            )
                         }
                         generate.apply {
                             isTables = true

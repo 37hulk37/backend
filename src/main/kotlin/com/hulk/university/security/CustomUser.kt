@@ -14,8 +14,6 @@ class CustomUser(
     constructor(account: Account, authorities: Collection<GrantedAuthority>):
             this(account.id!!, account.username!!, account.password!!, authorities)
 
-    fun getUserAuthorities(): List<String> =
-        authorities.stream()
-            .map { it.authority }
-            .toList()
+    fun getUserAuthorities() =
+        authorities.map { it.authority }
 }

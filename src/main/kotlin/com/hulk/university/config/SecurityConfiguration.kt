@@ -1,11 +1,9 @@
-package com.hulk.university
+package com.hulk.university.config
 
 import com.hulk.university.auth.SystemUserProperties
 import com.hulk.university.security.JwtTokenFilter
 import com.hulk.university.security.SystemUserAuthenticationProvider
 import com.hulk.university.security.jwt.JwtProperties
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
-import io.swagger.v3.oas.annotations.security.SecurityScheme
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -26,25 +24,17 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
-@SecurityScheme(
-    name = "JWT",
-    type = SecuritySchemeType.APIKEY,
-    bearerFormat = "JWT",
-    scheme = "bearer"
-)
 @EnableConfigurationProperties(value = [
     JwtProperties::class,
     SystemUserProperties::class
 ])
 @EnableMethodSecurity(securedEnabled = true)
 @Configuration
-class ModuleConfiguration(
+class SecurityConfiguration(
     private val systemUserProperties: SystemUserProperties
 ) {
 
-    companion object {
-        val log = LoggerFactory.getLogger(ModuleConfiguration::class.java)!!
-    }
+    private val log = LoggerFactory.getLogger(SecurityConfiguration::class.java)!!
 
     @Bean
     fun securityFilterChain(

@@ -12,7 +12,7 @@ import org.jooq.impl.DSL
 import org.jooq.impl.DSL.selectFrom
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
+import java.time.Instant
 import java.time.temporal.ChronoField
 
 @Service
@@ -44,7 +44,7 @@ class GroupsService(
         groupDao.findById(groupId)
 
 
-    fun getAverageMarks(from: LocalDateTime, to: LocalDateTime): List<GroupStatistics> = groupDao.ctx()
+    fun getAverageMarks(from: Instant, to: Instant): List<GroupStatistics> = groupDao.ctx()
         .select(GROUP.ID, GROUP.NAME, DSL.avg(MARK.VALUE).`as`("averageMark"))
         .from(GROUP)
         .innerJoin(USER).on(USER.GROUP_ID.eq(GROUP.ID))

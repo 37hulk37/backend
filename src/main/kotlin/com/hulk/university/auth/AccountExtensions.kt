@@ -3,7 +3,6 @@ package com.hulk.university.auth
 import com.hulk.university.tables.pojos.Account
 import com.hulk.university.tables.pojos.AccountRole
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import java.util.*
 
 fun Account.getAuthorities(role: AccountRole? = null): Collection<SimpleGrantedAuthority> {
     val authorities = mutableListOf<SimpleGrantedAuthority>()

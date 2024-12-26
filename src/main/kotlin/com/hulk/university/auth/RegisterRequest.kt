@@ -11,7 +11,7 @@ data class RegisterRequest(
 ) {
 
     @JsonIgnore
-    fun getUserTypeOrNull(): String? =
+    fun getRoleNameOrNull(): String? =
         UserType.values()
             .firstOrNull { it.name == userType }
             ?.name
