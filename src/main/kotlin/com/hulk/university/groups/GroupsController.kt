@@ -2,8 +2,9 @@ package com.hulk.university.groups
 
 import com.hulk.university.exceptions.NotFoundException
 import com.hulk.university.tables.pojos.Group
+import com.hulk.university.users.minusYears
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
+import java.time.Instant
 
 @RestController
 @RequestMapping("/api/groups")
@@ -32,10 +33,10 @@ class GroupsController(
 
     @GetMapping("/averageMarks")
     fun getAverageMarks(
-        @RequestParam(required = false) from: LocalDateTime?,
-        @RequestParam(required = false) to: LocalDateTime?
+        @RequestParam(required = false) from: Instant?,
+        @RequestParam(required = false) to: Instant?
     ): List<GroupStatistics> {
-        val actualTo = to ?: LocalDateTime.now()
+        val actualTo = to ?: Instant.now()
         return groupsService.getAverageMarks(
             from ?: actualTo.minusYears(1),
             actualTo

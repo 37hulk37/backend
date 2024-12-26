@@ -16,9 +16,7 @@ class CustomExceptionHandler(
     private val objectMapper: ObjectMapper
 ): ResponseEntityExceptionHandler() {
 
-    companion object {
-        val log = LoggerFactory.getLogger(CustomExceptionHandler::class.java)!!
-    }
+    private val log = LoggerFactory.getLogger(CustomExceptionHandler::class.java)!!
 
     @ExceptionHandler(Throwable::class)
     fun handleError(request: WebRequest, t: Throwable): ResponseEntity<Any>? {

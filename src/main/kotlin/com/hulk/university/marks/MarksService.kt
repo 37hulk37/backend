@@ -4,6 +4,7 @@ import com.hulk.university.create
 import com.hulk.university.createOrUpdate
 import com.hulk.university.enums.UserType
 import com.hulk.university.exceptions.NotFoundException
+import com.hulk.university.retryabletasks.RetryableTaskService
 import com.hulk.university.subjects.SubjectService
 import com.hulk.university.tables.daos.MarkDao
 import com.hulk.university.tables.pojos.Mark
@@ -16,6 +17,7 @@ class MarksService(
     private val markDao: MarkDao,
     private val userService: UserService,
     private val subjectService: SubjectService,
+    private val retryableTaskService: RetryableTaskService,
 ) {
 
     @Transactional
@@ -30,13 +32,16 @@ class MarksService(
             throw NotFoundException("Subject with id ${request.subjectId} not exists")
         }
 
-        return markDao.create(Mark(
+        val mark = markDao.create(Mark(
             studentId = request.studentId,
             subjectId = request.subjectId,
             teacherId = request.teacherId,
             value = request.value,
             year = request.year
         ))
+        retryableTaskService.createTask(mark, Mark::class.simpleName!!)
+
+        return mark
     }
 
     @Transactional

@@ -11,7 +11,7 @@ import com.hulk.university.tables.daos.UserDao
 import com.hulk.university.tables.pojos.User
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Service
 class UserService(
@@ -77,7 +77,7 @@ class UserService(
         userDao.findById(userId)?.takeIf { it.type == type } != null
 
 
-    fun getAverageMarks(userType: UserType, from: LocalDateTime, to: LocalDateTime): List<UserStatistics> {
+    fun getAverageMarks(userType: UserType, from: Instant, to: Instant): List<UserStatistics> {
         val handler = userHandlersByType[userType] ?:
             throw ApplicationException("Unknown user type: $userType")
 

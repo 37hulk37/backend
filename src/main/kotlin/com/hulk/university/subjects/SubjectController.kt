@@ -1,9 +1,10 @@
 package com.hulk.university.subjects
 
 import com.hulk.university.tables.pojos.Subject
+import com.hulk.university.users.minusYears
 import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
+import java.time.Instant
 
 @RestController
 @Secured("ADMIN")
@@ -31,10 +32,10 @@ class SubjectController(
 
     @GetMapping("/averageMarks")
     fun getAverageMarks(
-        @RequestParam from: LocalDateTime?,
-        @RequestParam to: LocalDateTime?
+        @RequestParam from: Instant?,
+        @RequestParam to: Instant?
     ): List<SubjectStatistics> {
-        val actualTo = to ?: LocalDateTime.now()
+        val actualTo = to ?: Instant.now()
         return subjectService.getAverageMarks(
             from ?: actualTo.minusYears(1),
             actualTo

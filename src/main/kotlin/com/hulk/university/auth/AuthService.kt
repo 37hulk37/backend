@@ -31,7 +31,7 @@ class AuthService(
             password = passwordEncoder.encode(request.password),
             isAdmin = request.isAdmin
         ))
-        val roleName = request.getUserTypeOrNull()
+        val roleName = request.getRoleNameOrNull()
         if (!StringUtils.hasText(roleName)) {
             return CustomUser(account, account.getAuthorities())
         }

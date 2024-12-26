@@ -11,7 +11,7 @@ import com.hulk.university.tables.references.SUBJECT
 import org.jooq.impl.DSL.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
+import java.time.Instant
 import java.time.temporal.ChronoField
 
 @Service
@@ -41,7 +41,7 @@ class SubjectService(
         subjectDao.findById(subjectId) ?:
             throw NotFoundException("Subject with id $subjectId not found")
 
-    fun getAverageMarks(from: LocalDateTime, until: LocalDateTime): List<SubjectStatistics> = subjectDao.ctx()
+    fun getAverageMarks(from: Instant, until: Instant): List<SubjectStatistics> = subjectDao.ctx()
         .select(SUBJECT.ID, SUBJECT.NAME, avg(MARK.VALUE).`as`("averageMark"))
         .from(SUBJECT)
         .innerJoin(MARK).on(MARK.SUBJECT_ID.eq(SUBJECT.ID))

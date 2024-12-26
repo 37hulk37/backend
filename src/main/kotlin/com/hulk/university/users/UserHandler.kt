@@ -1,11 +1,11 @@
 package com.hulk.university.users
 
 import com.hulk.university.enums.UserType
-import java.time.LocalDateTime
+import java.time.Instant
 
 interface UserHandler {
 
     fun getUserType(): UserType
 
-    fun getAverageMarks(from: LocalDateTime, to: LocalDateTime): List<UserStatistics>
+    fun getAverageMarks(from: Instant, to: Instant): List<UserStatistics>
 }
